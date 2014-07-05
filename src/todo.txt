@@ -1,0 +1,3 @@
+- Server event handler (onConnectionAccept, onConnectionLost, onInformationReceived)
+- User class
+- Multithreading
