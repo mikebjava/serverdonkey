@@ -3,6 +3,7 @@ package com.michaeljustin.servertest;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server
 {
@@ -11,6 +12,7 @@ public class Server
 	private Socket socket;
 	private ServerSocket serverSocket;
 	private boolean running;
+	private ArrayList<IServerHandler> serverHandlers = new ArrayList<IServerHandler>();
 
 	public Server(int PORT, int maxConnections)
 	{
@@ -20,24 +22,38 @@ public class Server
 
 	public void startServer() throws IOException
 	{
+
 		serverSocket = new ServerSocket(PORT);
 		setRunning(true);
+
+		for (int i = 0; i < serverHandlers.size(); i++)
+		{
+			serverHandlers.get(i).onServerStart(this);
+		}
+
 		while (running)
 		{
 			socket = serverSocket.accept();
+			for (int i = 0; i < serverHandlers.size(); i++)
+			{
+				serverHandlers.get(i).onConnectionAccept(socket);
+			}
 		}
+
 	}
 
-	public void StopServer(int exitValue) throws IOException
+	public void stopServer() throws IOException
 	{
 		// TODO close sockets and disconnect users
+		for (int i = 0; i < serverHandlers.size(); i++)
+		{
+			serverHandlers.get(i).onServerStop(this);
+		}
 		socket.close();
 		serverSocket.close();
 		System.out.println("Sockets closed");
-		System.exit(exitValue);
 	}
 
-	// getters/setters
 	public int getPort()
 	{
 		return PORT;
@@ -78,4 +94,14 @@ public class Server
 		this.running = running;
 	}
 
+	public void addServerHandler(IServerHandler handler)
+	{
+		if (handler != null)
+		{
+			this.serverHandlers.add(handler);
+		} else
+		{
+			throw new NullPointerException("Server could not register server handler; serverhandler is null.");
+		}
+	}
 }
