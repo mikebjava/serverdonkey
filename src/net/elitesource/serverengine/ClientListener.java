@@ -41,11 +41,12 @@ public class ClientListener implements Runnable
 				}
 			} catch (Exception e)
 			{
-				client.kill();
 				e.printStackTrace();
 				return;
 			}
 		}
+		client.getServer().removeClient(client);
+		client.kill();
 		System.out.println("Client connection terminated: " + client.getSocket().getInetAddress().getHostAddress());
 	}
 }

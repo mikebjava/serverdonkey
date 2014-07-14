@@ -16,12 +16,15 @@ public class Server implements Runnable
 	private boolean isRunning;
 	private ArrayList<ConnectedClient> connectedClients = new ArrayList<ConnectedClient>();
 	private ArrayList<ClientActionListener> defaultClientListeners = new ArrayList<ClientActionListener>();
+	private HeartbeatTimer heartbeatTimer;
+
+	// Addable consoles
 
 	public Server(int port) throws IOException
 	{
 		super();
 		this.serverSocket = new ServerSocket(port);
-
+		this.heartbeatTimer = new HeartbeatTimer(this, 4000);
 	}
 
 	public boolean isRunning()
@@ -57,17 +60,19 @@ public class Server implements Runnable
 	public void run()
 	{
 		isRunning = true;
+		(new Thread(heartbeatTimer)).start();
 		while (isRunning)
 		{
 			try
 			{
 				Socket clientSocket = serverSocket.accept();
-				ConnectedClient client = new ConnectedClient(clientSocket);
+				ConnectedClient client = new ConnectedClient(clientSocket, this);
 				if (defaultClientListeners.size() > 0)
 				{
 					for (int i = 0; i < defaultClientListeners.size(); i++)
 					{
 						client.getClientListener().getActionListeners().add(defaultClientListeners.get(i));
+						client.getClientListener().getActionListeners().get(i).onConnect(client);
 					}
 				}
 				if (connectedClients.size() <= 0)
@@ -88,4 +93,15 @@ public class Server implements Runnable
 
 		}
 	}
+
+	public ArrayList<ConnectedClient> getConnectedClients()
+	{
+		return connectedClients;
+	}
+
+	public HeartbeatTimer getHeartbeatTimer()
+	{
+		return heartbeatTimer;
+	}
+
 }

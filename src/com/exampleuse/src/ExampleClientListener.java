@@ -30,7 +30,6 @@ public class ExampleClientListener implements ClientActionListener
 	@Override
 	public void onConnect(ConnectedClient source)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
