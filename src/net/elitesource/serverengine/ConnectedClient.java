@@ -37,11 +37,6 @@ public class ConnectedClient
 			System.out.println("Client creation successful!");
 			System.out.println("[==============================]");
 
-			for (int i = 0; i < clientListener.getActionListeners().size(); i++)
-			{
-				clientListener.getActionListeners().get(i).onConnect(this);
-			}
-
 		} catch (Exception e)
 		{
 			System.out.println("Client Creation failed: " + e.getLocalizedMessage());
@@ -56,6 +51,7 @@ public class ConnectedClient
 			clientListener.getActionListeners().get(i).onOutput(this, object);
 		}
 		this.getOutputStream().writeObject(object);
+		this.getOutputStream().flush();
 	}
 
 	public boolean sendHeartbeat()

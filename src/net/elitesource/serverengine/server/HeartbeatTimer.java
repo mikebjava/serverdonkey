@@ -61,4 +61,9 @@ public class HeartbeatTimer implements Runnable
 	{
 		startTimer();
 	}
+
+	public void setInterval(int i)
+	{
+		this.interval = i;
+	}
 }
